@@ -8,9 +8,10 @@ import (
 
 func main() {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", router.HomePage)
+	mux.Handle("/", http.FileServer(http.Dir("./static")))
+	mux.HandleFunc("/home", router.HomePage)
 	mux.HandleFunc("/authPage/", router.AuthPage)
-	mux.HandleFunc("/regPage/", router.RegPage)
+	mux.HandleFunc("/regPage/", router.RegisterHandler)
 	mux.HandleFunc("/orgPage/", router.OrgPage)
 	mux.HandleFunc("/intermediateResults/", router.IntermediateResults)
 	mux.HandleFunc("/finalResults/", router.FinalResults)

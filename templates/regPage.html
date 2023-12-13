@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="/styles.css">
   <title>Регистрация</title>
 </head>
 <body>
@@ -36,17 +36,15 @@
       <input type="tel" id="phonenumber" name="phonenumber" required maxlength="15">
     </div>
 
-    <!-- Поле Опыт (чекбокс) -->
+    <!-- Поле Опыт (выпадающий список) -->
     <div class="form-group">
       <label for="experience">Опыт:</label>
-      <input type="checkbox" id="experience" name="experience" value="1" required>
+      <select id="experience" name="experience" required>
+        <option value="true">Да</option>
+        <option value="false">Нет</option>
+      </select>
     </div>
 
-    <!-- Поле Группа участника -->
-    <div class="form-group">
-      <label for="participantgroup">Группа участника:</label>
-      <input type="text" id="participantgroup" name="participantgroup" required maxlength="10">
-    </div>
 
     <!-- Кнопка отправки формы -->
     <div class="form-group">
