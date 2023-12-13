@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <title>Вход или Регистрация</title>
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      text-align: center;
+      margin-top: 50px;
+    }
+
+    .choice-container {
+      margin-top: 20px;
+    }
+
+    .choice-button {
+      margin-bottom: 15px;
+      padding: 15px 30px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      position: relative;
+    }
+
+    .choice-button:hover {
+      background-color: #ddd;
+    }
+
+    .tooltip {
+      display: none;
+      position: absolute;
+      background-color: #333;
+      color: #fff;
+      padding: 10px;
+      border-radius: 5px;
+      z-index: 1;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .choice-button:hover .tooltip {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Выберите действие</h2>
+  <div class="choice-container">
+    <button class="choice-button" onclick="redirectTo('/authPage/')">Вход
+      <span class="tooltip">Уже есть аккаунт? Войдите здесь.</span>
+    </button>
+
+    <button class="choice-button" onclick="redirectTo('/regPage/')">Регистрация
+      <span class="tooltip">Новый пользователь? Зарегистрируйтесь.</span>
+    </button>
+  </div>
+</div>
+
+<script>
+  function redirectTo(url) {
+    window.location.href = url;
+  }
+</script>
+
+</body>
+</html>

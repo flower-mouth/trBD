@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <title>Регистрация</title>
+</head>
+<body>
+
+<div class="container">
+  <h2>Форма регистрации</h2>
+  <form action="обработчик" method="post">
+
+    <!-- Поле ФИО -->
+    <div class="form-group">
+      <label for="fio">ФИО:</label>
+      <input type="text" id="fio" name="fio" required maxlength="255">
+    </div>
+
+    <!-- Поле Дата рождения -->
+    <div class="form-group">
+      <label for="birthdate">Дата рождения:</label>
+      <input type="date" id="birthdate" name="birthdate" required>
+    </div>
+
+    <!-- Поле Номер группы -->
+    <div class="form-group">
+      <label for="groupnumber">Номер группы:</label>
+      <input type="text" id="groupnumber" name="groupnumber" required maxlength="10">
+    </div>
+
+    <!-- Поле Номер телефона -->
+    <div class="form-group">
+      <label for="phonenumber">Номер телефона:</label>
+      <input type="tel" id="phonenumber" name="phonenumber" required maxlength="15">
+    </div>
+
+    <!-- Поле Опыт (чекбокс) -->
+    <div class="form-group">
+      <label for="experience">Опыт:</label>
+      <input type="checkbox" id="experience" name="experience" value="1" required>
+    </div>
+
+    <!-- Поле Группа участника -->
+    <div class="form-group">
+      <label for="participantgroup">Группа участника:</label>
+      <input type="text" id="participantgroup" name="participantgroup" required maxlength="10">
+    </div>
+
+    <!-- Кнопка отправки формы -->
+    <div class="form-group">
+      <input type="submit" value="Зарегистрироваться">
+    </div>
+
+  </form>
+</div>
+
+</body>
+</html>
