@@ -202,7 +202,76 @@ func OrgPage(w http.ResponseWriter, r *http.Request) {
 		Participants: participants,
 	}
 
-	fmt.Println("\n")
+	fmt.Println("----------------------------------------")
+
+	tmpl, err := template.ParseFiles("templates/orgPage.html")
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Internal server error", 500)
+		return
+	}
+
+	err = tmpl.Execute(w, data)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Internal server error", 500)
+		return
+	}
+}
+
+func AddWithoutExpPage(w http.ResponseWriter, r *http.Request) {
+	// Проверяем метод запроса
+	if r.Method == http.MethodPost {
+		// Получение данных из формы
+		firstFIO := r.FormValue("participant1")
+		secondFIO := r.FormValue("participant2")
+
+		log.Printf("firstFIO = %v", firstFIO)
+		log.Printf("secondFIO = %v", secondFIO)
+
+		firstId, err := getParticipantIDByFIO(dbClient, firstFIO)
+		if err != nil {
+			log.Print(err)
+		}
+
+		secondId, err := getParticipantIDByFIO(dbClient, secondFIO)
+		if err != nil {
+			log.Print(err)
+		}
+
+		log.Printf("firstId = %v", firstId)
+		log.Printf("secondId = %v", secondId)
+
+		pointsFirst, _ := strconv.ParseFloat(r.FormValue("pointsParticipant1"), 32)
+		pointsSecond, _ := strconv.ParseFloat(r.FormValue("pointsParticipant2"), 32)
+
+		log.Printf("pointsFirst = %v", pointsFirst)
+		log.Printf("pointsSecond = %v", pointsSecond)
+
+		// Вставка данных в базу данных
+		err = insertNonChessPlayerResult(firstId, secondId, pointsFirst, pointsSecond)
+
+		if err != nil {
+			log.Print(err)
+		} else {
+			log.Printf("Chess game results insertion successful")
+		}
+	}
+	// Получаем список участников из базы данных
+	participants, err := getZeroExpParticipantsFromDB(dbClient)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Internal server error", 500)
+		return
+	}
+	// Добавляем участников в контекст шаблона
+	data := struct {
+		Participants []models.Participants
+	}{
+		Participants: participants,
+	}
+
+	fmt.Println("----------------------------------------")
 
 	tmpl, err := template.ParseFiles("templates/orgPage.html")
 	if err != nil {
@@ -229,6 +298,30 @@ func insertChessPlayerResult(participant1id, participant2id int, pointsparticipa
 
 	// Подготовка SQL-запроса
 	query := "INSERT INTO chessplayersresults (participant1id, participant2id, pointsparticipant1, pointsparticipant2) VALUES ($1, $2, $3, $4)"
+	_, err = tx.Exec(context.Background(), query, participant1id, participant2id, pointsparticipant1, pointsparticipant2)
+	if err != nil {
+		return err
+	}
+
+	// Коммитим транзакцию
+	err = tx.Commit(context.Background())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func insertNonChessPlayerResult(participant1id, participant2id int, pointsparticipant1, pointsparticipant2 float64) error {
+	// Начинаем транзакцию
+	tx, err := dbClient.Begin(context.Background())
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(context.Background())
+
+	// Подготовка SQL-запроса
+	query := "INSERT INTO nonchessplayersresults (participant1id, participant2id, pointsparticipant1, pointsparticipant2) VALUES ($1, $2, $3, $4)"
 	_, err = tx.Exec(context.Background(), query, participant1id, participant2id, pointsparticipant1, pointsparticipant2)
 	if err != nil {
 		return err

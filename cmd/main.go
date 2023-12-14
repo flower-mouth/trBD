@@ -14,6 +14,7 @@ func main() {
 	mux.HandleFunc("/regPage/", router.RegisterHandler)
 	mux.HandleFunc("/userPage/", router.UserPage)
 	mux.HandleFunc("/orgPage/", router.OrgPage)
+	mux.HandleFunc("/addWithoutExpPage/", router.AddWithoutExpPage)
 	mux.HandleFunc("/intermediateResults/", router.IntermediateResults)
 	mux.HandleFunc("/points/", router.FinalResults)
 
