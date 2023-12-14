@@ -72,12 +72,14 @@ input[type="submit"]:hover {
 }
 
 .container {
-    max-width: 400px;
+    max-width: 800px;
     margin: 50px auto;
     background-color: #fff;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    box-sizing: border-box;
 }
 
 h2 {
@@ -87,6 +89,7 @@ h2 {
 
 .results-table {
     width: 100%;
+    max-width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
 }
@@ -120,5 +123,7 @@ select {
 select:hover,
 select:focus {
     border-color: #666;
+    width: 2000%;
+    padding: 12px;
 }
 

@@ -15,7 +15,8 @@ func main() {
 	mux.HandleFunc("/userPage/", router.UserPage)
 	mux.HandleFunc("/orgPage/", router.OrgPage)
 	mux.HandleFunc("/addWithoutExpPage/", router.AddWithoutExpPage)
-	mux.HandleFunc("/intermediateResults/", router.IntermediateResults)
+	mux.HandleFunc("/gamesPlayedExp/", router.GamesPlayedExp)
+	mux.HandleFunc("/gamesPlayedZeroExp/", router.GamesPlayedZeroExp)
 	mux.HandleFunc("/points/", router.FinalResults)
 
 	log.Printf("Starting server...")

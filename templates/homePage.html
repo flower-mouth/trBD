@@ -17,6 +17,9 @@
     .container {
       text-align: center;
       margin-top: 50px;
+      max-width: 400px; /* Добавляем максимальную ширину */
+      margin-left: auto; /* Центрируем контейнер по левому краю */
+      margin-right: auto; /* Центрируем контейнер по правому краю */
     }
 
     .choice-container {
@@ -49,8 +52,15 @@
       transform: translateX(-50%);
     }
 
+    .tooltip:hover {
+      padding: 15px;
+      font-size: 16px;
+    }
+
     .choice-button:hover .tooltip {
       display: block;
+      width: 160%;
+      padding: 12px;
     }
   </style>
 </head>

@@ -5,6 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/styles.css">
   <title>Результаты сыгранных игр</title>
+
+  <style>
+    .results-table {
+      width: 100%;
+    }
+
+    .results-table th,
+    .results-table td {
+      width: 33.33%;
+    }
+  </style>
+
 </head>
 <body>
 
@@ -19,17 +31,13 @@
     </tr>
     </thead>
     <tbody>
-    <!-- Здесь будут данные из базы данных о сыгранных играх -->
+    {{range .Results}}
     <tr>
-      <td>Имя участника 1</td>
-      <td>Имя участника 2</td>
-      <td>Победа участника 1</td>
+      <td>{{.Participant1FIO}}</td>
+      <td>{{.Participant2FIO}}</td>
+      <td>{{if eq .PointsParticipant1 1.0}}Победа первого{{else if eq .PointsParticipant1 0.5}}Ничья{{else if eq .PointsParticipant1 0.0}}Победа второго{{end}}</td>
     </tr>
-    <tr>
-      <td>Имя участника 3</td>
-      <td>Имя участника 4</td>
-      <td>Ничья</td>
-    </tr>
+    {{end}}
     </tbody>
   </table>
 </div>
