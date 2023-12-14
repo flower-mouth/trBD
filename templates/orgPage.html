@@ -10,7 +10,8 @@
 
 <div class="container">
     <h2>Организатор турнира - Добавление результатов</h2>
-    <form action="обработчик_результатов" method="post" id="resultsForm" onsubmit="return debugForm()">
+    <form action="обработчик_результатов" method="post">
+        <!--id="resultsForm" onsubmit="return debugForm()"-->
 
         <!-- Поле Участник 1 -->
         <div class="form-group">
@@ -60,7 +61,7 @@
     </form>
 </div>
 
-<script>
+<!--<script>
     // Дебаг формы
     function debugForm() {
         console.log("participant1 value:", document.getElementById('participant1').value);
@@ -78,7 +79,7 @@
         event.preventDefault();
     });
 
-</script>
+</script>-->
 
 </body>
 </html>

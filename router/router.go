@@ -2,6 +2,7 @@ package router
 
 import (
 	"context"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -150,7 +151,43 @@ func AuthPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func OrgPage(w http.ResponseWriter, r *http.Request) {
+	// Проверяем метод запроса
+	if r.Method == http.MethodPost {
+		// Получение данных из формы
+		firstFIO := r.FormValue("participant1")
+		secondFIO := r.FormValue("participant2")
 
+		log.Printf("firstFIO = %v", firstFIO)
+		log.Printf("secondFIO = %v", secondFIO)
+
+		firstId, err := getParticipantIDByFIO(dbClient, firstFIO)
+		if err != nil {
+			log.Print(err)
+		}
+
+		secondId, err := getParticipantIDByFIO(dbClient, secondFIO)
+		if err != nil {
+			log.Print(err)
+		}
+
+		log.Printf("firstId = %v", firstId)
+		log.Printf("secondId = %v", secondId)
+
+		pointsFirst, _ := strconv.ParseFloat(r.FormValue("pointsParticipant1"), 32)
+		pointsSecond, _ := strconv.ParseFloat(r.FormValue("pointsParticipant2"), 32)
+
+		log.Printf("pointsFirst = %v", pointsFirst)
+		log.Printf("pointsSecond = %v", pointsSecond)
+
+		// Вставка данных в базу данных
+		err = insertChessPlayerResult(firstId, secondId, pointsFirst, pointsSecond)
+
+		if err != nil {
+			log.Print(err)
+		} else {
+			log.Printf("Chess game results insertion successful")
+		}
+	}
 	// Получаем список участников из базы данных
 	participants, err := getExpParticipantsFromDB(dbClient)
 	if err != nil {
@@ -158,7 +195,6 @@ func OrgPage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal server error", 500)
 		return
 	}
-
 	// Добавляем участников в контекст шаблона
 	data := struct {
 		Participants []models.Participants
@@ -166,46 +202,20 @@ func OrgPage(w http.ResponseWriter, r *http.Request) {
 		Participants: participants,
 	}
 
+	fmt.Println("\n")
+
 	tmpl, err := template.ParseFiles("templates/orgPage.html")
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "Internal server error", 500)
 		return
 	}
+
 	err = tmpl.Execute(w, data)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "Internal server error", 500)
 		return
-	}
-
-	// Получение данных из формы
-	firstFIO := r.FormValue("participant1")
-	log.Printf("firstFIO = %v", firstFIO)
-	firstId, err := getParticipantIDByFIO(dbClient, firstFIO)
-	if err != nil {
-		log.Print(err)
-	}
-	secondFIO := r.FormValue("participant2")
-	log.Printf("secondFIO = %v", secondFIO)
-	secondId, err := getParticipantIDByFIO(dbClient, secondFIO)
-	if err != nil {
-		log.Print(err)
-	}
-	log.Printf("pointsFirst = %v", r.FormValue("pointsParticipant1"))
-	pointsFirst, _ := strconv.ParseFloat(r.FormValue("pointsParticipant1"), 32)
-
-	pointsSecond, _ := strconv.ParseFloat(r.FormValue("pointsParticipant2"), 32)
-	log.Printf("pointsSecond = %v", r.FormValue("pointsParticipant2"))
-
-	// Вставка данных в базу данных
-	err = insertChessPlayerResult(firstId, secondId, pointsFirst, pointsSecond)
-
-	if err != nil {
-		log.Print(err)
-	} else {
-		log.Printf("Insertion successful")
-		log.Printf("")
 	}
 }
 
