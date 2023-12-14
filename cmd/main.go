@@ -12,9 +12,10 @@ func main() {
 	mux.HandleFunc("/home", router.HomePage)
 	mux.HandleFunc("/authPage/", router.AuthPage)
 	mux.HandleFunc("/regPage/", router.RegisterHandler)
+	mux.HandleFunc("/userPage/", router.UserPage)
 	mux.HandleFunc("/orgPage/", router.OrgPage)
 	mux.HandleFunc("/intermediateResults/", router.IntermediateResults)
-	mux.HandleFunc("/finalResults/", router.FinalResults)
+	mux.HandleFunc("/points/", router.FinalResults)
 
 	log.Printf("Starting server...")
 	err := http.ListenAndServe(":8181", mux)

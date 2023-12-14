@@ -5,9 +5,11 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 	"trBD/internal/configuration"
 	"trBD/internal/database"
+	"trBD/internal/models"
 )
 
 var dbClient database.Client
@@ -89,7 +91,7 @@ func insertParticipant(fio, birthdate, groupnumber, phonenumber string, experien
 	defer tx.Rollback(context.Background())
 
 	// Подготовка SQL-запроса
-	query := "INSERT INTO Participants (FIO, BirthDate, GroupNumber, PhoneNumber, Experience, ParticipantGroup) VALUES ($1, $2, $3, $4, $5, $6)"
+	query := "INSERT INTO Participants (FIO, BirthDate, GroupNumber, PhoneNumber, Experience) VALUES ($1, $2, $3, $4, $5)"
 	_, err = tx.Exec(context.Background(), query, fio, birthdate, groupnumber, phonenumber, experience, participantgroup)
 	if err != nil {
 		return err
@@ -120,22 +122,179 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 }
 
 func AuthPage(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		// Получение данных из формы
+		username := r.FormValue("username")
+		password := r.FormValue("password")
+
+		// Проверка учетных данных
+		if username == "admin" && password == "admin" {
+			http.Redirect(w, r, "/orgPage/", http.StatusSeeOther)
+			return
+		}
+		if username == "user" && password == "user" {
+			http.Redirect(w, r, "/userPage/", http.StatusSeeOther)
+			return
+		}
+	}
+
+	// В противном случае, отобразить страницу входа
 	tmpl, err := template.ParseFiles("templates/authPage.html")
 	if err != nil {
 		log.Println(err)
-		http.Error(w, "Internal server error", 500)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
 	err = tmpl.Execute(w, nil)
 	if err != nil {
 		log.Println(err)
-		http.Error(w, "Internal server error", 500)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
 }
 
 func OrgPage(w http.ResponseWriter, r *http.Request) {
+
+	// Получаем список участников из базы данных
+	participants, err := getExpParticipantsFromDB(dbClient)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Internal server error", 500)
+		return
+	}
+
+	// Добавляем участников в контекст шаблона
+	data := struct {
+		Participants []models.Participants
+	}{
+		Participants: participants,
+	}
+
 	tmpl, err := template.ParseFiles("templates/orgPage.html")
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Internal server error", 500)
+		return
+	}
+	err = tmpl.Execute(w, data)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Internal server error", 500)
+		return
+	}
+
+	// Получение данных из формы
+	firstFIO := r.FormValue("participant1")
+	log.Printf("firstFIO = %v", firstFIO)
+	firstId, err := getParticipantIDByFIO(dbClient, firstFIO)
+	if err != nil {
+		log.Print(err)
+	}
+	secondFIO := r.FormValue("participant2")
+	log.Printf("secondFIO = %v", secondFIO)
+	secondId, err := getParticipantIDByFIO(dbClient, secondFIO)
+	if err != nil {
+		log.Print(err)
+	}
+	log.Printf("pointsFirst = %v", r.FormValue("pointsParticipant1"))
+	pointsFirst, _ := strconv.ParseFloat(r.FormValue("pointsParticipant1"), 32)
+
+	pointsSecond, _ := strconv.ParseFloat(r.FormValue("pointsParticipant2"), 32)
+	log.Printf("pointsSecond = %v", r.FormValue("pointsParticipant2"))
+
+	// Вставка данных в базу данных
+	err = insertChessPlayerResult(firstId, secondId, pointsFirst, pointsSecond)
+
+	if err != nil {
+		log.Print(err)
+	} else {
+		log.Printf("Insertion successful")
+		log.Printf("")
+	}
+}
+
+func insertChessPlayerResult(participant1id, participant2id int, pointsparticipant1, pointsparticipant2 float64) error {
+	// Начинаем транзакцию
+	tx, err := dbClient.Begin(context.Background())
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(context.Background())
+
+	// Подготовка SQL-запроса
+	query := "INSERT INTO chessplayersresults (participant1id, participant2id, pointsparticipant1, pointsparticipant2) VALUES ($1, $2, $3, $4)"
+	_, err = tx.Exec(context.Background(), query, participant1id, participant2id, pointsparticipant1, pointsparticipant2)
+	if err != nil {
+		return err
+	}
+
+	// Коммитим транзакцию
+	err = tx.Commit(context.Background())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Получение участников из базы данных
+func getExpParticipantsFromDB(dbClient database.Client) ([]models.Participants, error) {
+	rows, err := dbClient.Query(context.Background(), "SELECT fio FROM Participants WHERE experience = true")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var participants []models.Participants
+
+	for rows.Next() {
+		var p models.Participants
+		err := rows.Scan(&p.FIO)
+		if err != nil {
+			return nil, err
+		}
+		participants = append(participants, p)
+	}
+
+	return participants, nil
+}
+
+// Получение участников из базы данных
+func getZeroExpParticipantsFromDB(dbClient database.Client) ([]models.Participants, error) {
+	rows, err := dbClient.Query(context.Background(), "SELECT fio FROM Participants WHERE experience = false")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var participants []models.Participants
+
+	for rows.Next() {
+		var p models.Participants
+		err := rows.Scan(&p.FIO)
+		if err != nil {
+			return nil, err
+		}
+		participants = append(participants, p)
+	}
+
+	return participants, nil
+}
+
+// Функция получения ID участника по его ФИО
+func getParticipantIDByFIO(dbClient database.Client, fio string) (int, error) {
+	var participantID int
+
+	err := dbClient.QueryRow(context.Background(), "SELECT ID FROM Participants WHERE FIO = $1", fio).Scan(&participantID)
+	if err != nil {
+		return 0, err
+	}
+
+	return participantID, nil
+}
+
+func UserPage(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("templates/userPage.html")
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "Internal server error", 500)
@@ -165,7 +324,7 @@ func IntermediateResults(w http.ResponseWriter, r *http.Request) {
 }
 
 func FinalResults(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("templates/finalResults.html")
+	tmpl, err := template.ParseFiles("templates/points.html")
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "Internal server error", 500)
