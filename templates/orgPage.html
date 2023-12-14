@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../static/styles.css">
+    <link rel="stylesheet" href="/styles.css">
     <title>Организатор турнира - Добавление результатов</title>
 </head>
 <body>
 
 <div class="container">
     <h2>Организатор турнира - Добавление результатов</h2>
-    <form action="обработчик_результатов" method="post" id="resultsForm">
+    <form action="обработчик_результатов" method="post" id="resultsForm" onsubmit="return debugForm()">
 
         <!-- Поле Участник 1 -->
         <div class="form-group">
             <label for="participant1">Участник 1:</label>
             <select id="participant1" name="participant1" required>
-                <!-- Вставить опции с именами участников из базы данных -->
-                <option value="1">Имя участника 1</option>
-                <option value="2">Имя участника 2</option>
+                {{range .Participants}}
+                <option value="{{.FIO}}">{{.FIO}}</option>
+                {{end}}
             </select>
         </div>
 
@@ -26,9 +26,9 @@
         <div class="form-group">
             <label for="pointsParticipant1">Баллы для Участника 1:</label>
             <select id="pointsParticipant1" name="pointsParticipant1" required>
-                <option value="0">0</option>
+                <option value="0.0">0.0</option>
                 <option value="0.5">0.5</option>
-                <option value="1">1</option>
+                <option value="1.0">1.0</option>
             </select>
         </div>
 
@@ -36,9 +36,9 @@
         <div class="form-group">
             <label for="participant2">Участник 2:</label>
             <select id="participant2" name="participant2" required>
-                <!-- Вставить опции с именами участников из базы данных -->
-                <option value="3">Имя участника 3</option>
-                <option value="4">Имя участника 4</option>
+                {{range .Participants}}
+                <option value="{{.FIO}}">{{.FIO}}</option>
+                {{end}}
             </select>
         </div>
 
@@ -46,9 +46,9 @@
         <div class="form-group">
             <label for="pointsParticipant2">Баллы для Участника 2:</label>
             <select id="pointsParticipant2" name="pointsParticipant2" required>
-                <option value="0">0</option>
+                <option value="0.0">0.0</option>
                 <option value="0.5">0.5</option>
-                <option value="1">1</option>
+                <option value="1.0">1.0</option>
             </select>
         </div>
 
@@ -61,32 +61,23 @@
 </div>
 
 <script>
-    // Скрипт для синхронизации баллов участников
-    document.getElementById('pointsParticipant1').addEventListener('change', function() {
-        const points1 = parseFloat(this.value);
-        const points2Select = document.getElementById('pointsParticipant2');
+    // Дебаг формы
+    function debugForm() {
+        console.log("participant1 value:", document.getElementById('participant1').value);
+        console.log("pointsParticipant1 value:", document.getElementById('pointsParticipant1').value);
+        console.log("participant2 value:", document.getElementById('participant2').value);
+        console.log("pointsParticipant2 value:", document.getElementById('pointsParticipant2').value);
+        return true; // чтобы форма продолжила отправку
+    }
 
-        if (points1 === 0) {
-            points2Select.value = '1';
-        } else if (points1 === 1) {
-            points2Select.value = '0';
-        } else if (points1 === 0.5) {
-            points2Select.value = '0.5';
-        }
+    // Отмена автоматического обновления страницы сразу после нажатия кнопки
+    // Данные в ide теперь прилетают после ручного обновления страницы
+    document.getElementById('resultsForm').addEventListener('submit', function(event) {
+
+        // Предотвращаем стандартное поведение формы
+        event.preventDefault();
     });
 
-    document.getElementById('pointsParticipant2').addEventListener('change', function() {
-        const points2 = parseFloat(this.value);
-        const points1Select = document.getElementById('pointsParticipant1');
-
-        if (points2 === 0) {
-            points1Select.value = '1';
-        } else if (points2 === 1) {
-            points1Select.value = '0';
-        } else if (points2 === 0.5) {
-            points1Select.value = '0.5';
-        }
-    });
 </script>
 
 </body>

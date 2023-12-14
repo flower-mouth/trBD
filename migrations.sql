@@ -8,7 +8,6 @@ CREATE TABLE Participants (
     GroupNumber VARCHAR(10) NOT NULL,
     PhoneNumber VARCHAR(15) NOT NULL,
     Experience BOOLEAN NOT NULL,
-    ParticipantGroup VARCHAR(10) NOT NULL
 );
 
 -- Создание таблицы "Промежуточные результаты - Умеют играть в шахматы"
