@@ -587,16 +587,60 @@ func getChessPlayersPointsFromDB(dbClient database.Client) ([]models.ChessPlayer
 }
 
 func PointsZeroExpPage(w http.ResponseWriter, r *http.Request) {
+	// Получаем данные из базы данных
+	pointsData, err := getNonChessPlayersPointsFromDB(dbClient)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Internal server error", 500)
+		return
+	}
+
+	// Сортируем данные по набранным очкам
+	sort.Slice(pointsData, func(i, j int) bool {
+		return pointsData[i].Points > pointsData[j].Points
+	})
+
+	// Передаем отсортированные данные в HTML-шаблон
+	data := struct {
+		PointsData []models.NonChessPlayersPoints
+	}{
+		PointsData: pointsData,
+	}
+
 	tmpl, err := template.ParseFiles("templates/pointsZeroExp.html")
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "Internal server error", 500)
 		return
 	}
-	err = tmpl.Execute(w, nil)
+	err = tmpl.Execute(w, data)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "Internal server error", 500)
 		return
 	}
+}
+
+// Функция для получения данных из таблицы ChessPlayersPoints
+func getNonChessPlayersPointsFromDB(dbClient database.Client) ([]models.NonChessPlayersPoints, error) {
+	// Запрос к базе данных
+	query := "SELECT cp.Points, p.FIO FROM NonChessPlayersPoints cp INNER JOIN Participants p ON cp.ParticipantID = p.ID"
+	rows, err := dbClient.Query(context.Background(), query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var pointsData []models.NonChessPlayersPoints
+
+	for rows.Next() {
+		var pointData models.NonChessPlayersPoints
+		err := rows.Scan(&pointData.Points, &pointData.ParticipantFIO)
+		if err != nil {
+			return nil, err
+		}
+		pointsData = append(pointsData, pointData)
+	}
+
+	return pointsData, nil
 }
