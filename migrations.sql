@@ -11,14 +11,14 @@ CREATE TABLE Participants (
 );
 
 -- Создание таблицы "Промежуточные результаты - Умеют играть в шахматы"
-CREATE TABLE ChessPlayersIntermediateResults (
+CREATE TABLE ChessPlayersPoints (
     ID SERIAL PRIMARY KEY,
     ParticipantID INTEGER REFERENCES Participants(ID),
     Points DECIMAL(3, 1) NOT NULL
 );
 
 -- Создание таблицы "Промежуточные результаты - Не умеют играть в шахматы"
-CREATE TABLE NonChessPlayersIntermediateResults (
+CREATE TABLE NonChessPlayersPoints (
     ID SERIAL PRIMARY KEY,
     ParticipantID INTEGER REFERENCES Participants(ID),
     Points DECIMAL(3, 1) NOT NULL

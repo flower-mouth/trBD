@@ -5,6 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/styles.css">
     <title>Результаты турнира по шахматам</title>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var position = 1;
+            var rows = document.querySelectorAll('.results-table tbody tr');
+
+            rows.forEach(function(row) {
+                var cells = row.getElementsByTagName('td');
+                cells[2].textContent = position++;
+
+                // Apply classes based on position
+                if (position === 2) {
+                    row.classList.add('gold');
+                } else if (position === 3) {
+                    row.classList.add('silver');
+                } else if (position === 4) {
+                    row.classList.add('bronze');
+                }
+            });
+        });
+    </script>
+
 </head>
 <body>
 
@@ -18,29 +40,15 @@
             <th>Место</th>
         </tr>
         </thead>
-        <tbody>
-        <!-- Здесь будут данные из базы данных для первой группы -->
-        <tr class="gold">
-            <td>Имя игрока 1</td>
-            <td>3.5</td>
-            <td>1</td>
-        </tr>
-        <tr class="silver">
-            <td>Имя игрока 2</td>
-            <td>2.0</td>
-            <td>2</td>
-        </tr>
-        <tr class="bronze">
-            <td>Имя игрока 3</td>
-            <td>1.5</td>
-            <td>3</td>
-        </tr>
-        <tr>
-            <td>Имя игрока 4</td>
-            <td>0.5</td>
-            <td>4</td>
-        </tr>
 
+        <tbody>
+        {{ range $index, $element := .PointsData }}
+        <tr>
+            <td>{{ $element.ParticipantFIO }}</td>
+            <td>{{ $element.Points }}</td>
+            <td>{{ $index }}</td>
+        </tr>
+        {{ end }}
         </tbody>
     </table>
 </div>
