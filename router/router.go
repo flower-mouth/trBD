@@ -71,18 +71,14 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	experienceValue := r.FormValue("experience")
 	// Преобразуем значение из строки в булево
 	experience := experienceValue == "true"
-	participantgroup := "NO"
-	if experience {
-		participantgroup = "YES"
-	}
 
 	// Вставка данных в базу данных
-	err = insertParticipant(fio, birthdate, groupnumber, phonenumber, experience, participantgroup)
+	err = insertParticipant(fio, birthdate, groupnumber, phonenumber, experience)
 
 	log.Printf("Registration successful")
 }
 
-func insertParticipant(fio, birthdate, groupnumber, phonenumber string, experience bool, participantgroup string) error {
+func insertParticipant(fio, birthdate, groupnumber, phonenumber string, experience bool) error {
 	// Начинаем транзакцию
 	tx, err := dbClient.Begin(context.Background())
 	if err != nil {
@@ -92,7 +88,7 @@ func insertParticipant(fio, birthdate, groupnumber, phonenumber string, experien
 
 	// Подготовка SQL-запроса
 	query := "INSERT INTO Participants (FIO, BirthDate, GroupNumber, PhoneNumber, Experience) VALUES ($1, $2, $3, $4, $5)"
-	_, err = tx.Exec(context.Background(), query, fio, birthdate, groupnumber, phonenumber, experience, participantgroup)
+	_, err = tx.Exec(context.Background(), query, fio, birthdate, groupnumber, phonenumber, experience)
 	if err != nil {
 		return err
 	}
