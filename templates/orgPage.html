@@ -62,31 +62,51 @@
 
     <!-- Кнопки для перехода на другие страницы -->
     <div class="form-group">
-        <a href="/orgPage/"><button type="button">С опытом</button></a>
+        <a href="/orgPage/"><button id="orgPageButton" type="button">С опытом</button></a>
         <a href="/addWithoutExpPage/"><button type="button">Без опыта</button></a>
     </div>
 
+    <script>
+        // Получаем текущий путь
+        var currentPath = window.location.pathname;
+
+        // Проверяем, соответствует ли текущий путь "/orgPage/"
+        if (currentPath === "/orgPage/") {
+            // Если соответствует, добавляем класс для кнопки
+            document.getElementById('orgPageButton').classList.add('cyan-button');
+        }
+    </script>
+
 </div>
 
-<!--<script>
-    // Дебаг формы
-    function debugForm() {
-        console.log("participant1 value:", document.getElementById('participant1').value);
-        console.log("pointsParticipant1 value:", document.getElementById('pointsParticipant1').value);
-        console.log("participant2 value:", document.getElementById('participant2').value);
-        console.log("pointsParticipant2 value:", document.getElementById('pointsParticipant2').value);
-        return true; // чтобы форма продолжила отправку
-    }
+<script>
+    // Скрипт для синхронизации баллов участников
+    document.getElementById('pointsParticipant1').addEventListener('change', function() {
+        const points1 = parseFloat(this.value);
+        const points2Select = document.getElementById('pointsParticipant2');
 
-    // Отмена автоматического обновления страницы сразу после нажатия кнопки
-    // Данные в ide теперь прилетают после ручного обновления страницы
-    document.getElementById('resultsForm').addEventListener('submit', function(event) {
-
-        // Предотвращаем стандартное поведение формы
-        event.preventDefault();
+        if (points1 === 0.0) {
+            points2Select.value = '1.0';
+        } else if (points1 === 1.0) {
+            points2Select.value = '0.0';
+        } else if (points1 === 0.5) {
+            points2Select.value = '0.5';
+        }
     });
 
-</script>-->
+    document.getElementById('pointsParticipant2').addEventListener('change', function() {
+        const points2 = parseFloat(this.value);
+        const points1Select = document.getElementById('pointsParticipant1');
+
+        if (points2 === 0.0) {
+            points1Select.value = '1.0';
+        } else if (points2 === 1.0) {
+            points1Select.value = '0.0';
+        } else if (points2 === 0.5) {
+            points1Select.value = '0.5';
+        }
+    });
+</script>
 
 </body>
 </html>

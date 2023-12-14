@@ -63,20 +63,23 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal server error", 500)
 		return
 	}
+	if r.Method == http.MethodPost {
+		// Получение данных из формы
+		fio := r.FormValue("fio")
+		birthdate := r.FormValue("birthdate")
+		groupnumber := r.FormValue("groupnumber")
+		phonenumber := r.FormValue("phonenumber")
+		experienceValue := r.FormValue("experience")
+		// Преобразуем значение из строки в булево
+		experience := experienceValue == "true"
 
-	// Получение данных из формы
-	fio := r.FormValue("fio")
-	birthdate := r.FormValue("birthdate")
-	groupnumber := r.FormValue("groupnumber")
-	phonenumber := r.FormValue("phonenumber")
-	experienceValue := r.FormValue("experience")
-	// Преобразуем значение из строки в булево
-	experience := experienceValue == "true"
+		err = insertParticipant(fio, birthdate, groupnumber, phonenumber, experience)
 
-	// Вставка данных в базу данных
-	err = insertParticipant(fio, birthdate, groupnumber, phonenumber, experience)
-
-	log.Printf("Registration successful")
+		// Вставка данных в базу данных
+		if err == nil {
+			log.Printf("Registration successful")
+		}
+	}
 }
 
 func insertParticipant(fio, birthdate, groupnumber, phonenumber string, experience bool) error {
@@ -129,8 +132,12 @@ func AuthPage(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/orgPage/", http.StatusSeeOther)
 			return
 		}
-		if username == "user" && password == "user" {
-			http.Redirect(w, r, "/userPage/", http.StatusSeeOther)
+		if username == "Exp" && password == "Exp" {
+			http.Redirect(w, r, "/userExp/", http.StatusSeeOther)
+			return
+		}
+		if username == "zeroExp" && password == "zeroExp" {
+			http.Redirect(w, r, "/userZeroExp/", http.StatusSeeOther)
 			return
 		}
 	}
@@ -187,6 +194,8 @@ func OrgPage(w http.ResponseWriter, r *http.Request) {
 		} else {
 			log.Printf("Chess game results insertion successful")
 		}
+
+		fmt.Println("----------------------------------------")
 	}
 	// Получаем список участников из базы данных
 	participants, err := getExpParticipantsFromDB(dbClient)
@@ -201,8 +210,6 @@ func OrgPage(w http.ResponseWriter, r *http.Request) {
 	}{
 		Participants: participants,
 	}
-
-	fmt.Println("----------------------------------------")
 
 	tmpl, err := template.ParseFiles("templates/orgPage.html")
 	if err != nil {
@@ -256,6 +263,8 @@ func AddWithoutExpPage(w http.ResponseWriter, r *http.Request) {
 		} else {
 			log.Printf("Chess game results insertion successful")
 		}
+
+		fmt.Println("----------------------------------------")
 	}
 	// Получаем список участников из базы данных
 	participants, err := getZeroExpParticipantsFromDB(dbClient)
@@ -271,9 +280,7 @@ func AddWithoutExpPage(w http.ResponseWriter, r *http.Request) {
 		Participants: participants,
 	}
 
-	fmt.Println("----------------------------------------")
-
-	tmpl, err := template.ParseFiles("templates/orgPage.html")
+	tmpl, err := template.ParseFiles("templates/addWithoutExpPage.html")
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "Internal server error", 500)
@@ -392,8 +399,23 @@ func getParticipantIDByFIO(dbClient database.Client, fio string) (int, error) {
 	return participantID, nil
 }
 
-func UserPage(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("templates/userPage.html")
+func UserExpPage(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("templates/userExp.html")
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Internal server error", 500)
+		return
+	}
+	err = tmpl.Execute(w, nil)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Internal server error", 500)
+		return
+	}
+}
+
+func UserZeroExpPage(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("templates/userZeroExp.html")
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "Internal server error", 500)
@@ -503,8 +525,23 @@ func GamesPlayedZeroExp(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func FinalResults(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("templates/points.html")
+func PointsExpPage(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("templates/pointsExp.html")
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Internal server error", 500)
+		return
+	}
+	err = tmpl.Execute(w, nil)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Internal server error", 500)
+		return
+	}
+}
+
+func PointsZeroExpPage(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("templates/pointsZeroExp.html")
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "Internal server error", 500)
