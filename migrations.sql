@@ -189,6 +189,52 @@ FROM
         LEFT JOIN
     NonChessPlayersPoints ncp ON p.ID = ncp.ParticipantID;
 
+-- Создание процедуры для вставки значений в таблицу participant
+CREATE OR REPLACE PROCEDURE insert_participant(
+    p_fio VARCHAR(255),
+    p_birthdate DATE,
+    p_groupnumber VARCHAR(10),
+    p_phonenumber VARCHAR(15),
+    p_experience BOOLEAN
+)
+    LANGUAGE plpgsql
+AS $$
+BEGIN
+    INSERT INTO Participants (FIO, BirthDate, GroupNumber, PhoneNumber, Experience)
+    VALUES (p_fio, p_birthdate, p_groupnumber, p_phonenumber, p_experience);
+END;
+$$;
+
+-- Создание процедуры для вставки значений в таблицу chessPlayersResults
+CREATE OR REPLACE PROCEDURE insert_chess_player_result(
+    p_participant1id INTEGER,
+    p_participant2id INTEGER,
+    p_pointsparticipant1 DECIMAL(3, 1),
+    p_pointsparticipant2 DECIMAL(3, 1)
+)
+    LANGUAGE plpgsql
+AS $$
+BEGIN
+    INSERT INTO ChessPlayersResults (Participant1ID, Participant2ID, PointsParticipant1, PointsParticipant2)
+    VALUES (p_participant1id, p_participant2id, p_pointsparticipant1, p_pointsparticipant2);
+END;
+$$;
+
+-- Создание процедуры для вставки значений в таблицу nonChessPlayersResults
+CREATE OR REPLACE PROCEDURE insert_non_chess_player_result(
+    p_participant1id INTEGER,
+    p_participant2id INTEGER,
+    p_pointsparticipant1 DECIMAL(3, 1),
+    p_pointsparticipant2 DECIMAL(3, 1)
+)
+    LANGUAGE plpgsql
+AS $$
+BEGIN
+    INSERT INTO NonChessPlayersResults (Participant1ID, Participant2ID, PointsParticipant1, PointsParticipant2)
+    VALUES (p_participant1id, p_participant2id, p_pointsparticipant1, p_pointsparticipant2);
+END;
+$$;
+
 
 
 

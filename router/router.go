@@ -92,7 +92,7 @@ func insertParticipant(fio, birthdate, groupnumber, phonenumber string, experien
 	defer tx.Rollback(context.Background())
 
 	// Подготовка SQL-запроса
-	query := "INSERT INTO Participants (FIO, BirthDate, GroupNumber, PhoneNumber, Experience) VALUES ($1, $2, $3, $4, $5)"
+	query := "CALL insert_participant($1, $2, $3, $4, $5)"
 	_, err = tx.Exec(context.Background(), query, fio, birthdate, groupnumber, phonenumber, experience)
 	if err != nil {
 		return err
@@ -305,7 +305,7 @@ func insertChessPlayerResult(participant1id, participant2id int, pointsparticipa
 	defer tx.Rollback(context.Background())
 
 	// Подготовка SQL-запроса
-	query := "INSERT INTO chessplayersresults (participant1id, participant2id, pointsparticipant1, pointsparticipant2) VALUES ($1, $2, $3, $4)"
+	query := "CALL insert_chess_player_result($1, $2, $3, $4)"
 	_, err = tx.Exec(context.Background(), query, participant1id, participant2id, pointsparticipant1, pointsparticipant2)
 	if err != nil {
 		return err
@@ -329,7 +329,7 @@ func insertNonChessPlayerResult(participant1id, participant2id int, pointspartic
 	defer tx.Rollback(context.Background())
 
 	// Подготовка SQL-запроса
-	query := "INSERT INTO nonchessplayersresults (participant1id, participant2id, pointsparticipant1, pointsparticipant2) VALUES ($1, $2, $3, $4)"
+	query := "CALL insert_non_chess_player_result($1, $2, $3, $4)"
 	_, err = tx.Exec(context.Background(), query, participant1id, participant2id, pointsparticipant1, pointsparticipant2)
 	if err != nil {
 		return err
