@@ -5,28 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/styles.css">
     <title>Результаты турнира по шахматам</title>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var position = 1;
-            var rows = document.querySelectorAll('.results-table tbody tr');
-
-            rows.forEach(function(row) {
-                var cells = row.getElementsByTagName('td');
-                cells[2].textContent = position++;
-
-                // Apply classes based on position
-                if (position === 2) {
-                    row.classList.add('gold');
-                } else if (position === 3) {
-                    row.classList.add('silver');
-                } else if (position === 4) {
-                    row.classList.add('bronze');
-                }
-            });
-        });
-    </script>
-
+    <script src="/pointsPagesModification.js"></script>
 </head>
 <body>
 
