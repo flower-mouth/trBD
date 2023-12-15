@@ -109,4 +109,86 @@ $$;
 alter function update_nonchessplayerspoints() owner to postgres;
 
 
+-- ТАБЛИЧНАЯ ФУНКЦИЯ --
+-- Создание функции для получения результатов турнира
+CREATE OR REPLACE FUNCTION get_tournament_results()
+    RETURNS TABLE (
+                      ParticipantID INTEGER,
+                      FIO VARCHAR(255),
+                      Points DECIMAL(3, 1)
+                  ) AS $$
+BEGIN
+    -- Получение результатов шахматных игр
+    RETURN QUERY
+        SELECT
+            cp.ParticipantID,
+            p.FIO,
+            cp.Points
+        FROM
+            ChessPlayersPoints cp
+                INNER JOIN
+            Participants p ON cp.ParticipantID = p.ID;
+
+    -- Получение результатов игр для тех, кто не играет в шахматы
+    RETURN QUERY
+        SELECT
+            ncp.ParticipantID,
+            p.FIO,
+            ncp.Points
+        FROM
+            NonChessPlayersPoints ncp
+                INNER JOIN
+            Participants p ON ncp.ParticipantID = p.ID;
+END;
+$$ LANGUAGE plpgsql;
+
+
+-- СКАЛЯРНАЯ ФУНКЦИЯ --
+CREATE OR REPLACE FUNCTION calculate_total_points(participant_id INTEGER)
+    RETURNS DECIMAL(3, 1) AS $$
+DECLARE
+    total_points DECIMAL(3, 1);
+BEGIN
+    -- Рассчитать общее количество очков для заданного participant_id
+    SELECT
+        COALESCE(SUM(Points), 0)
+    INTO
+        total_points
+    FROM
+        ChessPlayersPoints
+    WHERE
+            ParticipantID = participant_id;
+
+    -- Добавить очки из NonChessPlayersPoints
+    SELECT
+        COALESCE(SUM(Points), 0)
+    INTO
+        total_points
+    FROM
+        NonChessPlayersPoints
+    WHERE
+            ParticipantID = participant_id;
+
+    RETURN total_points;
+END;
+$$ LANGUAGE plpgsql;
+
+/*SELECT
+    calculate_total_points(1) AS total_points_for_participant_1;*/
+
+-- ПРЕДСТАВЛЕНИЕ --
+CREATE OR REPLACE VIEW TournamentResults AS
+SELECT
+    p.ID AS ParticipantID,
+    p.FIO,
+    COALESCE(cp.Points, 0) + COALESCE(ncp.Points, 0) AS TotalPoints
+FROM
+    Participants p
+        LEFT JOIN
+    ChessPlayersPoints cp ON p.ID = cp.ParticipantID
+        LEFT JOIN
+    NonChessPlayersPoints ncp ON p.ID = ncp.ParticipantID;
+
+
+
 
