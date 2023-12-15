@@ -20,6 +20,7 @@ func main() {
 	mux.HandleFunc("/gamesPlayedZeroExp/", router.GamesPlayedZeroExp)
 	mux.HandleFunc("/pointsExp/", router.PointsExpPage)
 	mux.HandleFunc("/pointsZeroExp/", router.PointsZeroExpPage)
+	mux.HandleFunc("/pointsOverall/", router.TournamentResultsPage)
 
 	log.Printf("Starting server...")
 	err := http.ListenAndServe(":8181", mux)

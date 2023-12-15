@@ -644,3 +644,58 @@ func getNonChessPlayersPointsFromDB(dbClient database.Client) ([]models.NonChess
 
 	return pointsData, nil
 }
+
+func TournamentResultsPage(w http.ResponseWriter, r *http.Request) {
+	// Получаем данные из представления TournamentResults
+	results, err := getTournamentResultsFromDB(dbClient)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Internal server error", 500)
+		return
+	}
+
+	// Добавляем результаты в контекст шаблона
+	data := struct {
+		Participants []models.TournamentResults
+	}{
+		Participants: results,
+	}
+
+	tmpl, err := template.ParseFiles("templates/pointsOverall.html")
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Internal server error", 500)
+		return
+	}
+
+	err = tmpl.Execute(w, data)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Internal server error", 500)
+		return
+	}
+}
+
+// Функция для получения данных из представления TournamentResults
+func getTournamentResultsFromDB(dbClient database.Client) ([]models.TournamentResults, error) {
+	// Запрос к базе данных
+	query := "SELECT * FROM TournamentResults"
+	rows, err := dbClient.Query(context.Background(), query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var results []models.TournamentResults
+
+	for rows.Next() {
+		var result models.TournamentResults
+		err := rows.Scan(&result.ParticipantID, &result.FIO, &result.TotalPoints)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, result)
+	}
+
+	return results, nil
+}
