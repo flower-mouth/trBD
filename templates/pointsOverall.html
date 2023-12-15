@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Общие результаты турнира</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/sortByColumn.js"></script>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 95%;
+      margin: 20px;
+    }
+
+    th, td {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h2>Общие результаты турнира</h2>
+  <table id="results-table">
+    <tr>
+      <th onclick="sortTable(0)">ID участника</th>
+      <th onclick="sortTable(1)">Имя участника</th>
+      <th onclick="sortTable(2)">Набранные очки</th>
+    </tr>
+    {{ range .Participants }}
+    <tr>
+      <td>{{ .ParticipantID }}</td>
+      <td>{{ .FIO }}</td>
+      <td>{{ .TotalPoints }}</td>
+    </tr>
+    {{ end }}
+  </table>
+</div>
+</body>
+</html>

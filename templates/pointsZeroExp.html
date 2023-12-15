@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles.css">
+    <title>Результаты турнира по шахматам</title>
+    <script src="/pointsPagesModification.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <h2>Результаты турнира по шахматам - Умеющие играть</h2>
+    <table class="results-table">
+        <thead>
+        <tr>
+            <th>Имя участника</th>
+            <th>Набранные очки</th>
+            <th>Место</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {{ range $index, $element := .PointsData }}
+        <tr>
+            <td>{{ $element.ParticipantFIO }}</td>
+            <td>{{ $element.Points }}</td>
+            <td>{{ $index }}</td>
+        </tr>
+        {{ end }}
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/styles.css">
+  <title>Организатор турнира - Добавление результатов</title>
+  <script src="/pointsSyncAtRowInput.js"></script>
+</head>
+<body>
+<div class="container">
+  <h2>Организатор турнира - Добавление результатов</h2>
+  <form action="обработчик_результатов" method="post">
+    <!-- Поле Участник 1 -->
+    <div class="form-group">
+      <label for="participant1">Участник 1:</label>
+      <select id="participant1" name="participant1" required>
+        {{range .Participants}}
+        <option value="{{.FIO}}">{{.FIO}}</option>
+        {{end}}
+      </select>
+    </div>
+
+    <!-- Поле Баллы для Участника 1 -->
+    <div class="form-group">
+      <label for="pointsParticipant1">Баллы для Участника 1:</label>
+      <select id="pointsParticipant1" name="pointsParticipant1" required>
+        <option value="0.0">0.0</option>
+        <option value="0.5">0.5</option>
+        <option value="1.0">1.0</option>
+      </select>
+    </div>
+
+    <!-- Поле Участник 2 -->
+    <div class="form-group">
+      <label for="participant2">Участник 2:</label>
+      <select id="participant2" name="participant2" required>
+        {{range .Participants}}
+        <option value="{{.FIO}}">{{.FIO}}</option>
+        {{end}}
+      </select>
+    </div>
+
+    <!-- Поле Баллы для Участника 2 -->
+    <div class="form-group">
+      <label for="pointsParticipant2">Баллы для Участника 2:</label>
+      <select id="pointsParticipant2" name="pointsParticipant2" required>
+        <option value="0.0">0.0</option>
+        <option value="0.5">0.5</option>
+        <option value="1.0">1.0</option>
+      </select>
+    </div>
+
+    <!-- Кнопка отправки формы -->
+    <div class="form-group">
+      <input type="submit" value="Добавить результаты">
+    </div>
+
+  </form>
+
+  <!-- Кнопки для перехода на другие страницы -->
+  <div class="form-group">
+    <a href="/orgPage/"><button type="button">С опытом</button></a>
+    <a href="/addWithoutExpPage/"><button id="addWithoutExpButton" type="button">Без опыта</button></a>
+  </div>
+
+  <script>
+    // Получаем текущий путь
+    var currentPath = window.location.pathname;
+
+    // Проверяем, соответствует ли текущий путь "/addWithoutExpPage/"
+    if (currentPath === "/addWithoutExpPage/") {
+      // Если соответствует, добавляем класс для кнопки
+      document.getElementById('addWithoutExpButton').classList.add('cyan-button');
+    }
+  </script>
+
+</div>
+
+</body>
+</html>

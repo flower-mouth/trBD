@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles.css">
+    <title>Результаты сыгранных игр</title>
+
+    <style>
+        .results-table {
+            width: 100%;
+        }
+
+        .results-table th,
+        .results-table td {
+            width: 33.33%;
+        }
+    </style>
+
+</head>
+<body>
+
+<div class="container">
+    <h2>Результаты сыгранных игр</h2>
+    <table class="results-table">
+        <thead>
+        <tr>
+            <th>Игрок 1</th>
+            <th>Игрок 2</th>
+            <th>Результат</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{range .Results}}
+        <tr>
+            <td>{{.Participant1FIO}}</td>
+            <td>{{.Participant2FIO}}</td>
+            <td>{{if eq .PointsParticipant1 1.0}}Победа первого{{else if eq .PointsParticipant1 0.5}}Ничья{{else if eq .PointsParticipant1 0.0}}Победа второго{{end}}</td>
+        </tr>
+        {{end}}
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>
